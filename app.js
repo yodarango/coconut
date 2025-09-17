@@ -169,6 +169,14 @@
       } catch (e) {
         console.warn("Failed to load settings from localStorage:", e);
       }
+    } else {
+      // No settings found, apply default colors
+      const defaultColors = ["#2c2c2c", "#1e3a8a", "#7f1d1d"];
+      circles.forEach((circle, index) => {
+        if (defaultColors[index]) {
+          circle.style.backgroundColor = defaultColors[index];
+        }
+      });
     }
   }
 
@@ -226,15 +234,34 @@
     }
   }
 
-  // Add click handlers for color circles - single click only
+  // Add click handlers for color circles with double-click support
   colorCircles.forEach((circle, index) => {
+    let clickCount = 0;
+    let clickTimer = null;
+
     const convertToHex = convertRgbToHex;
 
     function handleClick() {
-      // Single click: set as current drawing color
-      const currentColor = window.getComputedStyle(circle).backgroundColor;
-      const hexColor = convertToHex(currentColor);
-      colorPicker.value = hexColor;
+      clickCount++;
+
+      if (clickCount === 1) {
+        clickTimer = setTimeout(() => {
+          // Single click: set as current drawing color
+          const currentColor = window.getComputedStyle(circle).backgroundColor;
+          const hexColor = convertToHex(currentColor);
+          colorPicker.value = hexColor;
+          clickCount = 0;
+        }, 300); // Wait 300ms to see if there's a second click
+      } else if (clickCount === 2) {
+        // Double click: change circle color
+        clearTimeout(clickTimer);
+        const currentColor = window.getComputedStyle(circle).backgroundColor;
+        const hexColor = convertToHex(currentColor);
+        currentColorCircleIndex = index;
+        quickColorPicker.value = hexColor;
+        quickColorPicker.click();
+        clickCount = 0;
+      }
     }
 
     circle.addEventListener("click", handleClick);
@@ -242,23 +269,6 @@
       e.preventDefault();
       handleClick();
     });
-  });
-
-  // Edit color button - cycles through colors to edit
-  const editColorBtn = document.getElementById("editColorBtn");
-  let editingColorIndex = 0;
-
-  editColorBtn.addEventListener("click", () => {
-    const circle = colorCircles[editingColorIndex];
-    const currentColor = window.getComputedStyle(circle).backgroundColor;
-    const hexColor = convertRgbToHex(currentColor);
-
-    currentColorCircleIndex = editingColorIndex;
-    quickColorPicker.value = hexColor;
-    quickColorPicker.click();
-
-    // Move to next color for next edit
-    editingColorIndex = (editingColorIndex + 1) % colorCircles.length;
   });
 
   // Handle color picker change
