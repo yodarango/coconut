@@ -97,6 +97,31 @@
   eraserBtn.addEventListener("click", () => {
     isErasing = !isErasing;
     eraserBtn.classList.toggle("active", isErasing);
+
+    // Get settings from localStorage
+    const settings = localStorage.getItem("settings");
+    let pencilSize = 8;
+    let eraserSize = 20;
+
+    if (settings) {
+      try {
+        const parsed = JSON.parse(settings);
+        pencilSize = parsed.pencilSize || 8;
+        eraserSize = parsed.eraserSize || 20;
+      } catch (e) {
+        console.warn("Failed to load brush sizes from settings");
+      }
+    }
+
+    if (isErasing) {
+      // Switch to eraser
+      brushSize.value = eraserSize;
+      brushSizeValue.textContent = eraserSize + "px";
+    } else {
+      // Switch to pencil
+      brushSize.value = pencilSize;
+      brushSizeValue.textContent = pencilSize + "px";
+    }
   });
 
   function loadSettings() {
@@ -123,12 +148,21 @@
             }
           });
         }
+
+        // Load brush sizes
+        if (parsed.pencilSize) {
+          if (!isErasing) {
+            brushSize.value = parsed.pencilSize;
+            brushSizeValue.textContent = parsed.pencilSize + "px";
+          }
+        }
+        if (parsed.eraserSize && isErasing) {
+          brushSize.value = parsed.eraserSize;
+          brushSizeValue.textContent = parsed.eraserSize + "px";
+        }
       } catch (e) {
         console.warn("Failed to load settings from localStorage:", e);
-        // If loading fails, keep the default colors
       }
-    } else {
-      console.log("No settings found in localStorage, using defaults"); // Debug log
     }
   }
 
@@ -153,15 +187,31 @@
   function saveSettings() {
     const quickColors = Array.from(colorCircles).map((circle) => {
       const computedColor = window.getComputedStyle(circle).backgroundColor;
-      console.log(computedColor);
       const hexColor = convertRgbToHex(computedColor);
       return hexColor;
     });
 
-    console.log(quickColors);
-    const settings = {
-      quickColors: quickColors,
-    };
+    // Get current settings or defaults
+    const existingSettings = localStorage.getItem("settings");
+    let settings = { quickColors };
+
+    if (existingSettings) {
+      try {
+        settings = { ...JSON.parse(existingSettings), quickColors };
+      } catch (e) {
+        console.warn("Failed to parse existing settings");
+      }
+    }
+
+    // Update brush sizes
+    const currentSize = Number(brushSize.value);
+    if (isErasing) {
+      settings.eraserSize = currentSize;
+      settings.pencilSize = settings.pencilSize || 8; // Keep existing or default
+    } else {
+      settings.pencilSize = currentSize;
+      settings.eraserSize = settings.eraserSize || 20; // Keep existing or default
+    }
 
     try {
       localStorage.setItem("settings", JSON.stringify(settings));
@@ -338,10 +388,13 @@
   window.addEventListener("touchend", endDraw);
 
   // Controls
-  brushSize.addEventListener(
-    "input",
-    () => (brushSizeValue.textContent = brushSize.value + "px")
-  );
+  brushSize.addEventListener("input", () => {
+    const size = Number(brushSize.value);
+    brushSizeValue.textContent = size + "px";
+
+    // Save settings when brush size changes
+    saveSettings();
+  });
   undoBtn.addEventListener("click", () => {
     const prev = history.pop();
     if (!prev) return;
@@ -374,6 +427,13 @@
 
   // Save to server
   saveServerBtn.addEventListener("click", async () => {
+    // Check if filename is empty
+    const nameInput = (filenamePrefix.value || "").trim();
+    if (!nameInput) {
+      alert("Please enter a filename before saving");
+      return;
+    }
+
     const url = normalizedUploadUrl();
     const name = makeFilename("png");
     setStatus("Uploading…");
@@ -383,10 +443,10 @@
       const blob = await new Promise((res) => canvas.toBlob(res, "image/png"));
       // Try HTTP PUT first (works with nginx WebDAV or DAV-enabled location)
       const putResp = await fetch(url + name, { method: "PUT", body: blob });
-      const imageUrl = `cdn.danielrangel.net/images/anki/${name}`;
       if (putResp.ok) {
         setStatus("Saved via PUT to " + url + name);
         alert("Saved image to " + url + name);
+        const imageUrl = `https://cdn.danielrangel.net/images/anki/${name}`;
         if (navigator.clipboard) {
           navigator.clipboard.writeText(imageUrl).then(
             () => {
@@ -397,7 +457,10 @@
             }
           );
         }
+        // Open the saved image in a new tab
+        window.open(imageUrl, "_blank");
         disableSaving(false);
+        window.location.reload();
         return;
       }
 
@@ -411,6 +474,7 @@
       alert("Saved image via upload: " + name);
       // Open the image in a new tab
       window.open(`https://cdn.danielrangel.net/images/anki/${name}`, "_blank");
+      window.location.reload();
     } catch (err) {
       console.error(err);
       setStatus("Error: " + err.message);
@@ -422,10 +486,11 @@
 
   function makeFilename(ext) {
     let name = (filenamePrefix.value || "").trim();
-    if (!name) name = "drawing";
     // Allow only safe chars and prevent path traversal/hidden files
     name = name.replace(/[^a-zA-Z0-9._-]/g, "_");
     name = name.replace(/[\\/]/g, "_").replace(/^\.+/, "");
+    // Convert to lowercase and replace spaces with underscores
+    name = name.toLowerCase().replace(/\s+/g, "_");
     if (!name.toLowerCase().endsWith("." + ext)) name += "." + ext;
     return name;
   }

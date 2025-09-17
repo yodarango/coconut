@@ -83,6 +83,9 @@ button:disabled {
 input[type="text"] {
   width: 160px;
 }
+input[type="range"] {
+  width: 80px;
+}
 .stage {
   flex: 1;
   display: grid;
