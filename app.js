@@ -457,17 +457,7 @@
       if (putResp.ok) {
         setStatus("Saved via PUT to " + url + name);
         alert("Saved image to " + url + name);
-        const imageUrl = `https://cdn.danielrangel.net/images/anki/${name}`;
-        if (navigator.clipboard) {
-          navigator.clipboard.writeText(imageUrl).then(
-            () => {
-              setStatus("Copied to clipboard: " + imageUrl);
-            },
-            () => {
-              setStatus("Could not copy to clipboard");
-            }
-          );
-        }
+        const imageUrl = `/images/anki/${name}`;
         // Open the saved image in a new tab
         window.open(imageUrl, "_blank");
         disableSaving(false);
