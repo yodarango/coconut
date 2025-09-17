@@ -114,11 +114,17 @@
     }
 
     if (isErasing) {
-      // Switch to eraser
+      // Switch to eraser: range 5-50, step 5
+      brushSize.min = "5";
+      brushSize.max = "50";
+      brushSize.step = "5";
       brushSize.value = eraserSize;
       brushSizeValue.textContent = eraserSize + "px";
     } else {
-      // Switch to pencil
+      // Switch to pencil: range 1-16, step 1
+      brushSize.min = "1";
+      brushSize.max = "16";
+      brushSize.step = "1";
       brushSize.value = pencilSize;
       brushSizeValue.textContent = pencilSize + "px";
     }
