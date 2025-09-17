@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Canvas Draw & Save</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="toolbar">
+        <div class="group">
+          <label class="label">Color</label>
+          <input id="colorPicker" type="color" value="#000000" />
+        </div>
+        <div class="group">
+          <label class="label">Quick Colors</label>
+          <div class="color-circles">
+            <div
+              class="color-circle"
+              data-index="0"
+              data-default-color="#ff0000"
+              title="Click to use color, Hold for 2 seconds to change color"
+            ></div>
+            <div
+              class="color-circle"
+              data-index="1"
+              data-default-color="#0000ff"
+              title="Click to use color, Hold for 2 seconds to change color"
+            ></div>
+            <div
+              class="color-circle"
+              data-index="2"
+              data-default-color="#000000"
+              title="Click to use color, Hold for 2 seconds to change color"
+            ></div>
+          </div>
+          <input type="color" id="quickColorPicker" style="display: none" />
+        </div>
+        <div class="group">
+          <label class="label">Brush</label>
+          <input id="brushSize" type="range" min="1" max="50" value="8" />
+          <span id="brushSizeValue" class="mono">8px</span>
+        </div>
+        <div class="group">
+          <button id="undoBtn" title="Undo (⌘/Ctrl+Z)">Undo</button>
+          <button id="clearBtn" title="Clear Canvas">Clear</button>
+          <button id="eraserBtn" title="Toggle Eraser">Eraser</button>
+        </div>
+        <div class="group grow hidden">
+          <label class="label">Upload URL</label>
+          <input
+            id="uploadUrl"
+            type="text"
+            value="/images/anki/"
+            placeholder="/images/anki/"
+          />
+        </div>
+        <div class="group">
+          <label class="label">Filename</label>
+          <input id="filenamePrefix" type="text" value="drawing" />
+        </div>
+        <div class="group">
+          <button id="saveServerBtn" class="primary">Save to Server</button>
+          <button id="downloadBtn">Download</button>
+        </div>
+      </header>
+
+      <main class="stage">
+        <canvas id="drawCanvas"></canvas>
+      </main>
+
+      <footer class="status" id="status">Ready.</footer>
+    </div>
+
+    <!-- Fixed 30px scroll proxy on the right -->
+    <div id="scrollProxy" class="scroll-proxy">
+      <div id="scrollThumb" class="scroll-thumb"></div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
