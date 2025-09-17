@@ -66,6 +66,14 @@ input[type="range"] {
 }
 button {
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+button:focus {
+  outline: none;
 }
 button.primary {
   background: var(--accent);
