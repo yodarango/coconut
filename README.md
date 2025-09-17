@@ -1,8 +1,4 @@
-#TODO
-
-- la taglia del cancellatore debe essere differente da quella della matita
-- quando un colore venga selezionato, chiude automaticamente il modelo di selezione e scegli se si trova seleezionate
-- rimuove double tap da ipad
+# TODO
 
 Canvas Draw & Save (Standalone)
 
