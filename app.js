@@ -226,64 +226,43 @@
     }
   }
 
-  // Add click handlers for color circles with long press support
+  // Add click handlers for color circles with double-click support
   colorCircles.forEach((circle, index) => {
-    let pressTimer = null;
-    let isLongPress = false;
+    let clickCount = 0;
+    let clickTimer = null;
 
     // Use the shared conversion function
     const convertToHex = convertRgbToHex;
 
-    function startPress() {
-      isLongPress = false;
-      pressTimer = setTimeout(() => {
-        isLongPress = true;
-        // Long press: change circle color
+    function handleClick() {
+      clickCount++;
+
+      if (clickCount === 1) {
+        clickTimer = setTimeout(() => {
+          // Single click: set as current drawing color
+          const currentColor = window.getComputedStyle(circle).backgroundColor;
+          const hexColor = convertToHex(currentColor);
+          colorPicker.value = hexColor;
+          clickCount = 0;
+        }, 300); // Wait 300ms to see if there's a second click
+      } else if (clickCount === 2) {
+        // Double click: change circle color
+        clearTimeout(clickTimer);
         const currentColor = window.getComputedStyle(circle).backgroundColor;
         const hexColor = convertToHex(currentColor);
         currentColorCircleIndex = index;
         quickColorPicker.value = hexColor;
         quickColorPicker.click();
-      }, 1000); // 1 seconds
-    }
-
-    function endPress() {
-      if (pressTimer) {
-        clearTimeout(pressTimer);
-        pressTimer = null;
-      }
-
-      if (!isLongPress) {
-        // Short press: set as current drawing color
-        const currentColor = window.getComputedStyle(circle).backgroundColor;
-        const hexColor = convertToHex(currentColor);
-        colorPicker.value = hexColor;
+        clickCount = 0;
       }
     }
 
-    function cancelPress() {
-      if (pressTimer) {
-        clearTimeout(pressTimer);
-        pressTimer = null;
-      }
-      isLongPress = false;
-    }
-
-    // Mouse events
-    circle.addEventListener("mousedown", startPress);
-    circle.addEventListener("mouseup", endPress);
-    circle.addEventListener("mouseleave", cancelPress);
-
-    // Touch events for mobile
-    circle.addEventListener("touchstart", (e) => {
-      e.preventDefault();
-      startPress();
-    });
+    // Mouse and touch events
+    circle.addEventListener("click", handleClick);
     circle.addEventListener("touchend", (e) => {
       e.preventDefault();
-      endPress();
+      handleClick();
     });
-    circle.addEventListener("touchcancel", cancelPress);
   });
 
   // Handle color picker change
