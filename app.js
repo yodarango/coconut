@@ -226,43 +226,39 @@
     }
   }
 
-  // Add click handlers for color circles with double-click support
+  // Add click handlers for color circles - single click only
   colorCircles.forEach((circle, index) => {
-    let clickCount = 0;
-    let clickTimer = null;
-
-    // Use the shared conversion function
     const convertToHex = convertRgbToHex;
 
     function handleClick() {
-      clickCount++;
-
-      if (clickCount === 1) {
-        clickTimer = setTimeout(() => {
-          // Single click: set as current drawing color
-          const currentColor = window.getComputedStyle(circle).backgroundColor;
-          const hexColor = convertToHex(currentColor);
-          colorPicker.value = hexColor;
-          clickCount = 0;
-        }, 300); // Wait 300ms to see if there's a second click
-      } else if (clickCount === 2) {
-        // Double click: change circle color
-        clearTimeout(clickTimer);
-        const currentColor = window.getComputedStyle(circle).backgroundColor;
-        const hexColor = convertToHex(currentColor);
-        currentColorCircleIndex = index;
-        quickColorPicker.value = hexColor;
-        quickColorPicker.click();
-        clickCount = 0;
-      }
+      // Single click: set as current drawing color
+      const currentColor = window.getComputedStyle(circle).backgroundColor;
+      const hexColor = convertToHex(currentColor);
+      colorPicker.value = hexColor;
     }
 
-    // Mouse and touch events
     circle.addEventListener("click", handleClick);
     circle.addEventListener("touchend", (e) => {
       e.preventDefault();
       handleClick();
     });
+  });
+
+  // Edit color button - cycles through colors to edit
+  const editColorBtn = document.getElementById("editColorBtn");
+  let editingColorIndex = 0;
+
+  editColorBtn.addEventListener("click", () => {
+    const circle = colorCircles[editingColorIndex];
+    const currentColor = window.getComputedStyle(circle).backgroundColor;
+    const hexColor = convertRgbToHex(currentColor);
+
+    currentColorCircleIndex = editingColorIndex;
+    quickColorPicker.value = hexColor;
+    quickColorPicker.click();
+
+    // Move to next color for next edit
+    editingColorIndex = (editingColorIndex + 1) % colorCircles.length;
   });
 
   // Handle color picker change

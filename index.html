@@ -27,21 +27,24 @@
               class="color-circle"
               data-index="0"
               data-default-color="#ff0000"
-              title="Click to use color, Double-click to change color"
+              title="Click to use color"
             ></div>
             <div
               class="color-circle"
               data-index="1"
               data-default-color="#0000ff"
-              title="Click to use color, Double-click to change color"
+              title="Click to use color"
             ></div>
             <div
               class="color-circle"
               data-index="2"
               data-default-color="#000000"
-              title="Click to use color, Double-click to change color"
+              title="Click to use color"
             ></div>
           </div>
+          <button id="editColorBtn" title="Edit Colors">
+            <ion-icon name="color-palette-outline"></ion-icon>
+          </button>
           <input type="color" id="quickColorPicker" style="display: none" />
         </div>
         <div class="group">
@@ -59,10 +62,10 @@
           <button id="undoBtn" title="Undo (⌘/Ctrl+Z)">
             <ion-icon name="arrow-undo-outline"></ion-icon>
           </button>
-          <button id="clearBtn" title="Clear Canvas">
+          <button id="eraserBtn" title="Clear Canvas">
             <ion-icon name="trash-outline"></ion-icon>
           </button>
-          <button id="eraserBtn" title="Toggle Eraser">
+          <button id="clearBtn" title="Toggle Eraser">
             <ion-icon name="remove-outline"></ion-icon>
           </button>
         </div>
