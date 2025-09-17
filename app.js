@@ -153,6 +153,7 @@
   function saveSettings() {
     const quickColors = Array.from(colorCircles).map((circle) => {
       const computedColor = window.getComputedStyle(circle).backgroundColor;
+      console.log(computedColor);
       const hexColor = convertRgbToHex(computedColor);
       return hexColor;
     });
@@ -234,7 +235,13 @@
     if (currentColorCircleIndex !== null) {
       const newColor = quickColorPicker.value;
       colorCircles[currentColorCircleIndex].style.backgroundColor = newColor;
-      saveSettings();
+
+      colorPicker.value = newColor;
+
+      setTimeout(() => {
+        saveSettings();
+      }, 0);
+
       currentColorCircleIndex = null;
     }
   });
