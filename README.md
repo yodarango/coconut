@@ -1,8 +1,5 @@
 #TODO
 
-- quando una imagine e stata salvata, rimuove il nome o soprascrivera la ultima!!!
-- permete acesso rapido ai colori rosso, blue, e nero
-- accesso rapido a la taglia di matita
 - la taglia del cancellatore debe essere differente da quella della matita
 - quando un colore venga selezionato, chiude automaticamente il modelo di selezione e scegli se si trova seleezionate
 - rimuove double tap da ipad
