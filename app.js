@@ -343,12 +343,14 @@
     if (!drawing) return;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
+    ctx.globalCompositeOperation = "source-over";
+
     if (isErasing) {
-      ctx.globalCompositeOperation = "destination-out";
+      ctx.strokeStyle = "#ffffff"; // White color for eraser
     } else {
-      ctx.globalCompositeOperation = "source-over";
       ctx.strokeStyle = colorPicker.value;
     }
+
     ctx.lineWidth = Number(brushSize.value);
     ctx.lineTo(x, y);
     ctx.stroke();
@@ -401,7 +403,10 @@
     // Save settings when brush size changes
     saveSettings();
   });
-  undoBtn.addEventListener("click", () => {
+  undoBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.target.blur(); // Remove focus from button
+
     const prev = history.pop();
     if (!prev) return;
     const img = new Image();
