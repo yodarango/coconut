@@ -171,7 +171,7 @@
       }
     } else {
       // No settings found, apply default colors
-      const defaultColors = ["#2c2c2c", "#1e3a8a", "#7f1d1d"];
+      const defaultColors = ["#000000", "#0000ff", "#ff0000"];
       circles.forEach((circle, index) => {
         if (defaultColors[index]) {
           circle.style.backgroundColor = defaultColors[index];
