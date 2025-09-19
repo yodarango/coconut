@@ -507,11 +507,10 @@
 
   function makeFilename(ext) {
     let name = (filenamePrefix.value || "").trim();
-    // Allow only safe chars and prevent path traversal/hidden files
-    name = name.replace(/[^a-zA-Z0-9._-]/g, "_");
-    name = name.replace(/[\\/]/g, "_").replace(/^\.+/, "");
-    // Convert to lowercase and replace spaces with underscores
-    name = name.toLowerCase().replace(/\s+/g, "_");
+    // Allow safe chars including Unicode letters and prevent path traversal/hidden files
+    name = name.replace(/[<>:"/\\|?*]/g, "_"); // Only replace filesystem-unsafe chars
+    name = name.replace(/^\.+/, ""); // Remove leading dots
+    name = name.replace(/\s+/g, "_"); // Replace spaces with underscores
     if (!name.toLowerCase().endsWith("." + ext)) name += "." + ext;
     return name;
   }
