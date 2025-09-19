@@ -306,7 +306,41 @@
     try {
       history.push(canvas.toDataURL("image/png"));
       if (history.length > 20) history.shift();
+
+      // Save history to localStorage
+      localStorage.setItem("drawingHistory", JSON.stringify(history));
     } catch (e) {}
+  }
+
+  function saveCurrentCanvas() {
+    try {
+      const currentState = canvas.toDataURL("image/png");
+      localStorage.setItem("currentDrawing", currentState);
+    } catch (e) {}
+  }
+
+  function loadCanvasFromStorage() {
+    try {
+      // Load history
+      const savedHistory = localStorage.getItem("drawingHistory");
+      if (savedHistory) {
+        history = JSON.parse(savedHistory);
+      }
+
+      // Load current drawing
+      const savedDrawing = localStorage.getItem("currentDrawing");
+      if (savedDrawing) {
+        const img = new Image();
+        img.onload = () => {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          const rect = canvas.getBoundingClientRect();
+          ctx.drawImage(img, 0, 0, rect.width, rect.height);
+        };
+        img.src = savedDrawing;
+      }
+    } catch (e) {
+      console.warn("Failed to load canvas from storage:", e);
+    }
   }
 
   function startDraw(x, y) {
@@ -338,6 +372,8 @@
   }
   function endDraw() {
     drawing = false;
+    // Save current state after drawing
+    saveCurrentCanvas();
   }
 
   // Pointer events (mouse + touch)
@@ -407,6 +443,7 @@
     ctx.fillStyle = "#ffffff";
     const r = canvas.getBoundingClientRect();
     ctx.fillRect(0, 0, r.width, r.height);
+    saveCurrentCanvas();
   });
 
   // Download
@@ -574,6 +611,7 @@
     fitCanvas();
     brushSizeValue.textContent = pencilSize.value + "px";
     loadSettings();
+    loadCanvasFromStorage();
 
     // Small delay to ensure DOM is fully ready
     setTimeout(() => {
