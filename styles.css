@@ -20,6 +20,7 @@ body {
     Noto Sans, sans-serif;
   color: var(--text);
   background: var(--bg);
+  overflow-x:hidden;
   overflow-y: auto; /* allow native wheel/trackpad scroll; proxy is for drag */
 }
 .app {
@@ -170,4 +171,10 @@ canvas {
 
 .color-circle:active {
   transform: scale(0.95);
+}
+
+#colorPicker, #quickColorPicker{
+  position: fixed;
+  top: -100vh;
+  left: -100vw;
 }
