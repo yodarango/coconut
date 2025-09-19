@@ -253,7 +253,20 @@
         const hexColor = convertToHex(currentColor);
         currentColorCircleIndex = index;
         quickColorPicker.value = hexColor;
-        quickColorPicker.click();
+
+        // Try multiple methods to open color picker on iPad
+        quickColorPicker.focus();
+        setTimeout(() => {
+          quickColorPicker.click();
+          // Fallback: dispatch a click event
+          const clickEvent = new MouseEvent("click", {
+            bubbles: true,
+            cancelable: true,
+            view: window,
+          });
+          quickColorPicker.dispatchEvent(clickEvent);
+        }, 50);
+
         clickCount = 0;
       }
     }
