@@ -136,14 +136,6 @@
 
     const settings = localStorage.getItem("settings");
 
-    // First set default colors
-    circles.forEach((circle, index) => {
-      const defaultColor = circle.getAttribute("data-default-color");
-      if (defaultColor) {
-        circle.style.backgroundColor = defaultColor;
-      }
-    });
-
     if (settings) {
       try {
         const parsed = JSON.parse(settings);
@@ -245,6 +237,7 @@
       clickCount++;
 
       if (clickCount === 1) {
+        consol.log("single click ");
         clickTimer = setTimeout(() => {
           // Single click: set as current drawing color
           const currentColor = window.getComputedStyle(circle).backgroundColor;
@@ -253,6 +246,7 @@
           clickCount = 0;
         }, 300); // Wait 300ms to see if there's a second click
       } else if (clickCount === 2) {
+        consol.log("double click ");
         // Double click: change circle color
         clearTimeout(clickTimer);
         const currentColor = window.getComputedStyle(circle).backgroundColor;
@@ -281,7 +275,7 @@
 
       setTimeout(() => {
         saveSettings();
-      }, 0);
+      }, 100);
 
       currentColorCircleIndex = null;
     }
@@ -575,18 +569,16 @@
   function init() {
     fitCanvas();
     brushSizeValue.textContent = brushSize.value + "px";
+    loadSettings();
 
     // Small delay to ensure DOM is fully ready
     setTimeout(() => {
-      loadSettings();
-
-      // Save initial settings if none exist
       const existingSettings = localStorage.getItem("settings");
       if (!existingSettings) {
         console.log("No existing settings, saving defaults");
         saveSettings();
       }
-    }, 100);
+    }, 500);
 
     setStatus("Ready. Draw with mouse/touch.");
   }
