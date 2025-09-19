@@ -237,7 +237,7 @@
       clickCount++;
 
       if (clickCount === 1) {
-        consol.log("single click ");
+        console.log("single click ");
         clickTimer = setTimeout(() => {
           // Single click: set as current drawing color
           const currentColor = window.getComputedStyle(circle).backgroundColor;
@@ -246,7 +246,7 @@
           clickCount = 0;
         }, 300); // Wait 300ms to see if there's a second click
       } else if (clickCount === 2) {
-        consol.log("double click ");
+        console.log("double click ");
         // Double click: change circle color
         clearTimeout(clickTimer);
         const currentColor = window.getComputedStyle(circle).backgroundColor;
