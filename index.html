@@ -38,17 +38,26 @@
               title="Click to use color, Double-click to change color"
             ></div>
           </div>
-          <input type="color" id="colorPicker"  />
+          <input type="color" id="colorPicker" />
           <input type="color" id="quickColorPicker" />
         </div>
         <div class="group">
           <input
-            id="brushSize"
+            id="pencilSize"
             type="range"
             min="1"
-            max="50"
+            max="16"
             step="1"
             value="8"
+          />
+          <input
+            id="eraserSize"
+            type="range"
+            min="5"
+            max="50"
+            step="5"
+            value="20"
+            style="display: none"
           />
           <span id="brushSizeValue" class="mono">8px</span>
         </div>

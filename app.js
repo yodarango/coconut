@@ -4,7 +4,8 @@
   const canvas = $("drawCanvas");
   const ctx = canvas.getContext("2d");
   const colorPicker = $("colorPicker");
-  const brushSize = $("brushSize");
+  const pencilSize = $("pencilSize");
+  const eraserSize = $("eraserSize");
   const brushSizeValue = $("brushSizeValue");
   const undoBtn = $("undoBtn");
   const clearBtn = $("clearBtn");
@@ -98,35 +99,16 @@
     isErasing = !isErasing;
     eraserBtn.classList.toggle("active", isErasing);
 
-    // Get settings from localStorage
-    const settings = localStorage.getItem("settings");
-    let pencilSize = 8;
-    let eraserSize = 20;
-
-    if (settings) {
-      try {
-        const parsed = JSON.parse(settings);
-        pencilSize = parsed.pencilSize || 8;
-        eraserSize = parsed.eraserSize || 20;
-      } catch (e) {
-        console.warn("Failed to load brush sizes from settings");
-      }
-    }
-
     if (isErasing) {
-      // Switch to eraser: range 5-50, step 5
-      brushSize.min = "5";
-      brushSize.max = "50";
-      brushSize.step = "5";
-      brushSize.value = eraserSize;
-      brushSizeValue.textContent = eraserSize + "px";
+      // Switch to eraser
+      pencilSize.style.display = "none";
+      eraserSize.style.display = "block";
+      brushSizeValue.textContent = eraserSize.value + "px";
     } else {
-      // Switch to pencil: range 1-16, step 1
-      brushSize.min = "1";
-      brushSize.max = "16";
-      brushSize.step = "1";
-      brushSize.value = pencilSize;
-      brushSizeValue.textContent = pencilSize + "px";
+      // Switch to pencil
+      eraserSize.style.display = "none";
+      pencilSize.style.display = "block";
+      brushSizeValue.textContent = pencilSize.value + "px";
     }
   });
 
@@ -135,6 +117,14 @@
     const circles = document.querySelectorAll(".color-circle");
 
     const settings = localStorage.getItem("settings");
+
+    // First set default colors
+    circles.forEach((circle, index) => {
+      const defaultColor = circle.getAttribute("data-default-color");
+      if (defaultColor) {
+        circle.style.backgroundColor = defaultColor;
+      }
+    });
 
     if (settings) {
       try {
@@ -149,14 +139,16 @@
 
         // Load brush sizes
         if (parsed.pencilSize) {
+          pencilSize.value = parsed.pencilSize;
           if (!isErasing) {
-            brushSize.value = parsed.pencilSize;
             brushSizeValue.textContent = parsed.pencilSize + "px";
           }
         }
-        if (parsed.eraserSize && isErasing) {
-          brushSize.value = parsed.eraserSize;
-          brushSizeValue.textContent = parsed.eraserSize + "px";
+        if (parsed.eraserSize) {
+          eraserSize.value = parsed.eraserSize;
+          if (isErasing) {
+            brushSizeValue.textContent = parsed.eraserSize + "px";
+          }
         }
       } catch (e) {
         console.warn("Failed to load settings from localStorage:", e);
@@ -210,14 +202,8 @@
     }
 
     // Update brush sizes
-    const currentSize = Number(brushSize.value);
-    if (isErasing) {
-      settings.eraserSize = currentSize;
-      settings.pencilSize = settings.pencilSize || 8; // Keep existing or default
-    } else {
-      settings.pencilSize = currentSize;
-      settings.eraserSize = settings.eraserSize || 20; // Keep existing or default
-    }
+    settings.pencilSize = Number(pencilSize.value);
+    settings.eraserSize = Number(eraserSize.value);
 
     try {
       localStorage.setItem("settings", JSON.stringify(settings));
@@ -338,12 +324,13 @@
     ctx.globalCompositeOperation = "source-over";
 
     if (isErasing) {
-      ctx.strokeStyle = "#ffffff"; // White color for eraser
+      ctx.strokeStyle = "#ffffff";
+      ctx.lineWidth = Number(eraserSize.value);
     } else {
       ctx.strokeStyle = colorPicker.value;
+      ctx.lineWidth = Number(pencilSize.value);
     }
 
-    ctx.lineWidth = Number(brushSize.value);
     ctx.lineTo(x, y);
     ctx.stroke();
     lastX = x;
@@ -388,11 +375,15 @@
   window.addEventListener("touchend", endDraw);
 
   // Controls
-  brushSize.addEventListener("input", () => {
-    const size = Number(brushSize.value);
+  pencilSize.addEventListener("input", () => {
+    const size = Number(pencilSize.value);
     brushSizeValue.textContent = size + "px";
+    saveSettings();
+  });
 
-    // Save settings when brush size changes
+  eraserSize.addEventListener("input", () => {
+    const size = Number(eraserSize.value);
+    brushSizeValue.textContent = size + "px";
     saveSettings();
   });
   undoBtn.addEventListener("click", (e) => {
@@ -581,7 +572,7 @@
   // Init
   function init() {
     fitCanvas();
-    brushSizeValue.textContent = brushSize.value + "px";
+    brushSizeValue.textContent = pencilSize.value + "px";
     loadSettings();
 
     // Small delay to ensure DOM is fully ready
