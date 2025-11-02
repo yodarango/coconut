@@ -266,6 +266,8 @@
       const newColor = input.value;
       if (colorCircles[index]) {
         colorCircles[index].style.backgroundColor = newColor;
+        // Automatically select the edited color as current drawing color
+        colorPicker.value = newColor;
         saveSettings();
       }
     });
