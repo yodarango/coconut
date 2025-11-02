@@ -237,7 +237,8 @@
     isEditingColors = !isEditingColors;
 
     if (isEditingColors) {
-      // Show color inputs and change icon to X
+      // Hide circles, show color inputs and change icon to X
+      document.querySelector(".color-circles").classList.add("hidden");
       colorInputsContainer.classList.remove("hidden");
       editColorsBtn.innerHTML = '<ion-icon name="close-outline"></ion-icon>';
       editColorsBtn.title = "Close color editor";
@@ -251,7 +252,8 @@
         }
       });
     } else {
-      // Hide color inputs and change icon back to pencil
+      // Show circles, hide color inputs and change icon back to pencil
+      document.querySelector(".color-circles").classList.remove("hidden");
       colorInputsContainer.classList.add("hidden");
       editColorsBtn.innerHTML = '<ion-icon name="create-outline"></ion-icon>';
       editColorsBtn.title = "Edit colors";
