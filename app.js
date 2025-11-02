@@ -449,6 +449,23 @@
     setStatus("Downloaded " + name);
   });
 
+  // Copy canvas image to clipboard
+  async function copyCanvasToClipboard() {
+    try {
+      const blob = await new Promise((resolve) =>
+        canvas.toBlob(resolve, "image/png")
+      );
+      if (!blob) throw new Error("Could not create blob from canvas");
+      const item = new ClipboardItem({ [blob.type]: blob });
+      await navigator.clipboard.write([item]);
+      console.log("Image copied to clipboard");
+      return true;
+    } catch (err) {
+      console.error("Failed to copy to clipboard:", err);
+      return false;
+    }
+  }
+
   // Save to server
   saveServerBtn.addEventListener("click", async () => {
     // Check if filename is empty
@@ -465,11 +482,20 @@
 
     try {
       const blob = await new Promise((res) => canvas.toBlob(res, "image/png"));
+
+      // Copy to clipboard
+      const copied = await copyCanvasToClipboard();
+      if (copied) {
+        setStatus("Image copied to clipboard. Uploading…");
+      }
+
       // Try HTTP PUT first (works with nginx WebDAV or DAV-enabled location)
       const putResp = await fetch(url + name, { method: "PUT", body: blob });
       if (putResp.ok) {
-        setStatus("Saved via PUT to " + url + name);
-        alert("Saved image to " + url + name);
+        setStatus("Saved via PUT to " + url + name + " (copied to clipboard)");
+        alert(
+          "Saved image to " + url + name + "\n\nImage copied to clipboard!"
+        );
         const imageUrl = `/images/anki/${name}`;
         // Open the saved image in a new tab
         window.open(imageUrl, "_blank");
@@ -484,8 +510,10 @@
       const postResp = await fetch(url, { method: "POST", body: form });
       if (!postResp.ok)
         throw new Error("Upload failed with status " + postResp.status);
-      setStatus("Saved via POST to " + url);
-      alert("Saved image via upload: " + name);
+      setStatus("Saved via POST to " + url + " (copied to clipboard)");
+      alert(
+        "Saved image via upload: " + name + "\n\nImage copied to clipboard!"
+      );
       // Open the image in a new tab
       window.open(`https://cdn.danielrangel.net/images/anki/${name}`, "_blank");
       window.location.reload();
