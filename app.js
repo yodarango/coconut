@@ -449,8 +449,38 @@
     setStatus("Downloaded " + name);
   });
 
+  // Helper function to get cookie value
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(";").shift();
+    return null;
+  }
+
+  // Helper function to set cookie
+  function setCookie(name, value, days = 365) {
+    const expires = new Date();
+    expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
+    document.cookie = `${name}=${value}; expires=${expires.toUTCString()}; path=/; secure; SameSite=None`;
+  }
+
   // Save to server
   saveServerBtn.addEventListener("click", async () => {
+    // Check for authentication cookie
+    let authToken = getCookie("anki_auth");
+
+    if (!authToken) {
+      authToken = prompt(
+        "Please enter the authentication token to save images:"
+      );
+      if (!authToken) {
+        alert("Authentication token is required to save images");
+        return;
+      }
+      // Save the token as a cookie
+      setCookie("anki_auth", authToken);
+    }
+
     // Check if filename is empty
     const nameInput = (filenamePrefix.value || "").trim();
     if (!nameInput) {
