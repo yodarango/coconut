@@ -449,23 +449,6 @@
     setStatus("Downloaded " + name);
   });
 
-  // Copy canvas image to clipboard
-  async function copyCanvasToClipboard() {
-    try {
-      const blob = await new Promise((resolve) =>
-        canvas.toBlob(resolve, "image/png")
-      );
-      if (!blob) throw new Error("Could not create blob from canvas");
-      const item = new ClipboardItem({ [blob.type]: blob });
-      await navigator.clipboard.write([item]);
-      console.log("Image copied to clipboard");
-      return true;
-    } catch (err) {
-      console.error("Failed to copy to clipboard:", err);
-      return false;
-    }
-  }
-
   // Save to server
   saveServerBtn.addEventListener("click", async () => {
     // Check if filename is empty
@@ -480,25 +463,36 @@
     setStatus("Uploading…");
     disableSaving(true);
 
+    let copied = false;
+
     try {
+      // Create blob once for both clipboard and upload
       const blob = await new Promise((res) => canvas.toBlob(res, "image/png"));
 
-      // Copy to clipboard
-      const copied = await copyCanvasToClipboard();
-      if (copied) {
-        setStatus("Image copied to clipboard. Uploading…");
+      // Try to copy to clipboard immediately (must be synchronous with user gesture for iOS)
+      try {
+        if (navigator.clipboard && navigator.clipboard.write) {
+          const item = new ClipboardItem({
+            "image/png": blob,
+          });
+          await navigator.clipboard.write([item]);
+          copied = true;
+          console.log("Image copied to clipboard");
+          setStatus("Image copied to clipboard. Uploading…");
+        }
+      } catch (clipErr) {
+        console.warn("Clipboard copy failed:", clipErr);
+        // Continue with upload even if clipboard fails
       }
 
       // Try HTTP PUT first (works with nginx WebDAV or DAV-enabled location)
       const putResp = await fetch(url + name, { method: "PUT", body: blob });
       if (putResp.ok) {
-        setStatus("Saved via PUT to " + url + name + " (copied to clipboard)");
-        alert(
-          "Saved image to " + url + name + "\n\nImage copied to clipboard!"
-        );
-        const imageUrl = `/images/anki/${name}`;
-        // Open the saved image in a new tab
-        window.open(imageUrl, "_blank");
+        const message = copied
+          ? "Saved image to " + url + name + "\n\nImage copied to clipboard!"
+          : "Saved image to " + url + name;
+        setStatus("Saved via PUT to " + url + name);
+        alert(message);
         disableSaving(false);
         window.location.reload();
         return;
@@ -510,12 +504,11 @@
       const postResp = await fetch(url, { method: "POST", body: form });
       if (!postResp.ok)
         throw new Error("Upload failed with status " + postResp.status);
-      setStatus("Saved via POST to " + url + " (copied to clipboard)");
-      alert(
-        "Saved image via upload: " + name + "\n\nImage copied to clipboard!"
-      );
-      // Open the image in a new tab
-      window.open(`https://cdn.danielrangel.net/images/anki/${name}`, "_blank");
+      const message = copied
+        ? "Saved image via upload: " + name + "\n\nImage copied to clipboard!"
+        : "Saved image via upload: " + name;
+      setStatus("Saved via POST to " + url);
+      alert(message);
       window.location.reload();
     } catch (err) {
       console.error(err);
