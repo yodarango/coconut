@@ -20,7 +20,7 @@ body {
     Noto Sans, sans-serif;
   color: var(--text);
   background: var(--bg);
-  overflow-x:hidden;
+  overflow-x: hidden;
   overflow-y: auto; /* allow native wheel/trackpad scroll; proxy is for drag */
 }
 .app {
@@ -173,8 +173,40 @@ canvas {
   transform: scale(0.95);
 }
 
-#colorPicker, #quickColorPicker{
+#colorPicker {
+  visibility: hidden;
   position: fixed;
-  top: -100vh;
-  left: -100vw;
+  display: none;
+  left: 100px;
+  top: 100px;
+  width: 0;
+  height: 0;
+}
+
+.color-inputs-container {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.color-inputs-container.hidden {
+  display: none;
+}
+
+.color-input {
+  width: 40px;
+  height: 32px;
+  padding: 2px;
+  cursor: pointer;
+}
+
+#editColorsBtn {
+  padding: 0.45rem 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#editColorsBtn ion-icon {
+  font-size: 18px;
 }

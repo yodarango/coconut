@@ -23,23 +23,30 @@
               class="color-circle"
               data-index="0"
               data-default-color="#000000"
-              title="Click to use color, Double-click to change color"
+              title="Click to use color"
             ></div>
             <div
               class="color-circle"
               data-index="1"
               data-default-color="#0000ff"
-              title="Click to use color, Double-click to change color"
+              title="Click to use color"
             ></div>
             <div
               class="color-circle"
               data-index="2"
               data-default-color="#ff0000"
-              title="Click to use color, Double-click to change color"
+              title="Click to use color"
             ></div>
           </div>
+          <button id="editColorsBtn" title="Edit colors">
+            <ion-icon name="create-outline"></ion-icon>
+          </button>
           <input type="color" id="colorPicker" />
-          <input type="color" id="quickColorPicker" />
+        </div>
+        <div class="group color-inputs-container hidden">
+          <input type="color" class="color-input" data-index="0" />
+          <input type="color" class="color-input" data-index="1" />
+          <input type="color" class="color-input" data-index="2" />
         </div>
         <div class="group">
           <input

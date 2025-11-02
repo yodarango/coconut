@@ -17,10 +17,14 @@
   const eraserBtn = $("eraserBtn");
   const scrollProxy = document.getElementById("scrollProxy");
   const scrollThumb = document.getElementById("scrollThumb");
-  const quickColorPicker = $("quickColorPicker");
   const colorCircles = document.querySelectorAll(".color-circle");
+  const editColorsBtn = $("editColorsBtn");
+  const colorInputsContainer = document.querySelector(
+    ".color-inputs-container"
+  );
+  const colorInputs = document.querySelectorAll(".color-input");
   let isErasing = false;
-  let currentColorCircleIndex = null;
+  let isEditingColors = false;
   // Right-side scroll proxy (30px) helpers
   function isOnScrollProxy(e) {
     const t = e && e.target;
@@ -212,49 +216,13 @@
     }
   }
 
-  // Add click handlers for color circles with double-click support
-  colorCircles.forEach((circle, index) => {
-    let clickCount = 0;
-    let clickTimer = null;
-
-    const convertToHex = convertRgbToHex;
-
+  // Add click handlers for color circles - single click to select color
+  colorCircles.forEach((circle) => {
     function handleClick() {
-      clickCount++;
-
-      if (clickCount === 1) {
-        console.log("single click ");
-        clickTimer = setTimeout(() => {
-          // Single click: set as current drawing color
-          const currentColor = window.getComputedStyle(circle).backgroundColor;
-          const hexColor = convertToHex(currentColor);
-          colorPicker.value = hexColor;
-          clickCount = 0;
-        }, 300); // Wait 300ms to see if there's a second click
-      } else if (clickCount === 2) {
-        console.log("double click ");
-        // Double click: change circle color
-        clearTimeout(clickTimer);
-        const currentColor = window.getComputedStyle(circle).backgroundColor;
-        const hexColor = convertToHex(currentColor);
-        currentColorCircleIndex = index;
-        quickColorPicker.value = hexColor;
-
-        // Try multiple methods to open color picker on iPad
-        quickColorPicker.focus();
-        setTimeout(() => {
-          quickColorPicker.click();
-          // Fallback: dispatch a click event
-          const clickEvent = new MouseEvent("click", {
-            bubbles: true,
-            cancelable: true,
-            view: window,
-          });
-          quickColorPicker.dispatchEvent(clickEvent);
-        }, 50);
-
-        clickCount = 0;
-      }
+      // Single click: set as current drawing color
+      const currentColor = window.getComputedStyle(circle).backgroundColor;
+      const hexColor = convertRgbToHex(currentColor);
+      colorPicker.value = hexColor;
     }
 
     circle.addEventListener("click", handleClick);
@@ -264,20 +232,41 @@
     });
   });
 
-  // Handle color picker change
-  quickColorPicker.addEventListener("change", () => {
-    if (currentColorCircleIndex !== null) {
-      const newColor = quickColorPicker.value;
-      colorCircles[currentColorCircleIndex].style.backgroundColor = newColor;
+  // Toggle edit colors mode
+  editColorsBtn.addEventListener("click", () => {
+    isEditingColors = !isEditingColors;
 
-      colorPicker.value = newColor;
+    if (isEditingColors) {
+      // Show color inputs and change icon to X
+      colorInputsContainer.classList.remove("hidden");
+      editColorsBtn.innerHTML = '<ion-icon name="close-outline"></ion-icon>';
+      editColorsBtn.title = "Close color editor";
 
-      setTimeout(() => {
-        saveSettings();
-      }, 100);
-
-      currentColorCircleIndex = null;
+      // Sync color inputs with current circle colors
+      colorCircles.forEach((circle, index) => {
+        const currentColor = window.getComputedStyle(circle).backgroundColor;
+        const hexColor = convertRgbToHex(currentColor);
+        if (colorInputs[index]) {
+          colorInputs[index].value = hexColor;
+        }
+      });
+    } else {
+      // Hide color inputs and change icon back to pencil
+      colorInputsContainer.classList.add("hidden");
+      editColorsBtn.innerHTML = '<ion-icon name="create-outline"></ion-icon>';
+      editColorsBtn.title = "Edit colors";
     }
+  });
+
+  // Handle color input changes
+  colorInputs.forEach((input, index) => {
+    input.addEventListener("change", () => {
+      const newColor = input.value;
+      if (colorCircles[index]) {
+        colorCircles[index].style.backgroundColor = newColor;
+        saveSettings();
+      }
+    });
   });
 
   window.addEventListener("resize", () => {
