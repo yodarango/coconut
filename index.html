@@ -1,115 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Canvas Draw & Save</title>
-    <link rel="stylesheet" href="styles.css?v=1.0.2" />
-    <script
-      type="module"
-      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"
-    ></script>
-    <script
-      nomodule
-      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"
-    ></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Canvas Draw Component - Demo</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+    </style>
   </head>
   <body>
-    <div class="app">
-      <header class="toolbar">
-        <div class="group">
-          <button id="editColorsBtn" title="Edit colors">
-            <ion-icon name="create-outline"></ion-icon>
-          </button>
-          <div class="color-circles">
-            <div
-              class="color-circle"
-              data-index="0"
-              data-default-color="#000000"
-              title="Click to use color"
-            ></div>
-            <div
-              class="color-circle"
-              data-index="1"
-              data-default-color="#0000ff"
-              title="Click to use color"
-            ></div>
-            <div
-              class="color-circle"
-              data-index="2"
-              data-default-color="#ff0000"
-              title="Click to use color"
-            ></div>
-          </div>
-          <div class="color-inputs-container hidden">
-            <input type="color" class="color-input" data-index="0" />
-            <input type="color" class="color-input" data-index="1" />
-            <input type="color" class="color-input" data-index="2" />
-          </div>
-          <input type="color" id="colorPicker" />
-        </div>
-        <div class="group">
-          <input
-            id="pencilSize"
-            type="range"
-            min="1"
-            max="16"
-            step="1"
-            value="8"
-          />
-          <input
-            id="eraserSize"
-            type="range"
-            min="5"
-            max="50"
-            step="5"
-            value="20"
-            style="display: none"
-          />
-          <span id="brushSizeValue" class="mono">8px</span>
-        </div>
-        <div class="group">
-          <button id="undoBtn" title="Undo (⌘/Ctrl+Z)">
-            <ion-icon name="arrow-undo-outline"></ion-icon>
-          </button>
-          <button id="eraserBtn" title="Clear Canvas">
-            <ion-icon name="trash-outline"></ion-icon>
-          </button>
-          <button id="clearBtn" title="Toggle Eraser">
-            <ion-icon name="close-outline"></ion-icon>
-          </button>
-        </div>
-        <div class="group grow hidden">
-          <label class="label">Upload URL</label>
-          <input
-            id="uploadUrl"
-            type="text"
-            value="/images/anki/"
-            placeholder="/images/anki/"
-          />
-        </div>
-        <div class="group">
-          <label class="label">name</label>
-          <input id="filenamePrefix" type="text" value="" />
-        </div>
-        <div class="group">
-          <button id="saveServerBtn" class="primary">Save</button>
-          <button id="downloadBtn">Download</button>
-        </div>
-      </header>
-
-      <main class="stage">
-        <canvas id="drawCanvas"></canvas>
-      </main>
-
-      <footer class="status" id="status">Ready.</footer>
-    </div>
-
-    <!-- Fixed 30px scroll proxy on the right -->
-    <div id="scrollProxy" class="scroll-proxy">
-      <div id="scrollThumb" class="scroll-thumb"></div>
-    </div>
-
-    <script src="app.js?v=1.0.2"></script>
+    <div id="root"></div>
+    <script type="module" src="/demo/main.jsx"></script>
   </body>
 </html>
+

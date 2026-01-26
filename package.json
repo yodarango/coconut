@@ -1,0 +1,34 @@
+{
+  "name": "canvas-draw",
+  "version": "1.0.0",
+  "description": "Self-contained canvas drawing component for React",
+  "type": "module",
+  "main": "./dist/canvas-draw.umd.js",
+  "module": "./dist/canvas-draw.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/canvas-draw.es.js",
+      "require": "./dist/canvas-draw.umd.js"
+    },
+    "./dist/style.css": "./dist/style.css"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.2.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "vite": "^5.0.0"
+  }
+}
+
