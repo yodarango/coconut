@@ -28,7 +28,7 @@ const CanvasDraw = ({
   const [status, setStatus] = useState("Ready.");
   const [isSaving, setIsSaving] = useState(false);
   const [quickColors, setQuickColors] = useState(defaultColors);
-  const [isEditingColors, setIsEditingColors] = useState(false);
+  const colorInputRefs = useRef([]);
 
   // Helper: convert rgb to hex
   const rgbToHex = (rgb) => {
@@ -469,15 +469,12 @@ const CanvasDraw = ({
     }
   };
 
-  // Color circle click
-  const handleColorCircleClick = (color) => {
-    setCurrentColor(color);
-    setIsErasing(false);
-  };
-
-  // Edit colors toggle
-  const handleEditColorsToggle = () => {
-    setIsEditingColors(!isEditingColors);
+  // Color circle click - opens color picker for that slot
+  const handleColorCircleClick = (index) => {
+    // Trigger the hidden color input for this index
+    if (colorInputRefs.current[index]) {
+      colorInputRefs.current[index].click();
+    }
   };
 
   // Color input change
@@ -485,43 +482,37 @@ const CanvasDraw = ({
     const newColors = [...quickColors];
     newColors[index] = newColor;
     setQuickColors(newColors);
+    // Also set as current color when changed
+    setCurrentColor(newColor);
+    setIsErasing(false);
   };
 
   return (
     <div className={styles.canvasDrawRoot}>
       <header className={styles.toolbar}>
         <div className={styles.group}>
-          <button
-            className={`${styles.button} ${styles.editColorsBtn}`}
-            onClick={handleEditColorsToggle}
-            title='Edit colors'
-          >
-            ✏️
-          </button>
           <div className={styles.colorCircles}>
             {quickColors.map((color, index) => (
               <div
                 key={index}
                 className={styles.colorCircle}
                 style={{ backgroundColor: color }}
-                onClick={() => handleColorCircleClick(color)}
-                title='Click to use color'
+                onClick={() => handleColorCircleClick(index)}
+                title='Click to change color'
               />
             ))}
           </div>
-          <div
-            className={`${styles.colorInputsContainer} ${!isEditingColors ? styles.hidden : ""}`}
-          >
-            {quickColors.map((color, index) => (
-              <input
-                key={index}
-                type='color'
-                className={styles.colorInputElement}
-                value={color}
-                onChange={(e) => handleColorInputChange(index, e.target.value)}
-              />
-            ))}
-          </div>
+          {/* Hidden color inputs triggered by clicking color circles */}
+          {quickColors.map((color, index) => (
+            <input
+              key={index}
+              ref={(el) => (colorInputRefs.current[index] = el)}
+              type='color'
+              style={{ display: "none" }}
+              value={color}
+              onChange={(e) => handleColorInputChange(index, e.target.value)}
+            />
+          ))}
           <input
             type='color'
             className={styles.colorPicker}
