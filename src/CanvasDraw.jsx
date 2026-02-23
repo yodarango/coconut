@@ -553,21 +553,21 @@ const CanvasDraw = ({
             onClick={handleUndo}
             title='Undo (⌘/Ctrl+Z)'
           >
-            ↶
+            <ion-icon name='arrow-undo-outline'></ion-icon>
           </button>
           <button
             className={`${styles.button} ${isErasing ? styles.active : ""}`}
             onClick={handleToggleEraser}
             title='Toggle Eraser'
           >
-            🗑️
+            <ion-icon name='trash-outline'></ion-icon>
           </button>
           <button
             className={styles.button}
             onClick={handleClear}
             title='Clear Canvas'
           >
-            ✕
+            <ion-icon name='close-outline'></ion-icon>
           </button>
         </div>
 
